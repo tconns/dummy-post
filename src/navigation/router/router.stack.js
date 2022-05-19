@@ -8,7 +8,7 @@ const AppStack = () => {
   const stacks = [
     RouterDefine.LOGIN,
     RouterDefine.HOME,
-    RouterDefine.POST,
+    RouterDefine.SPLASH,
   ];
   return (
     <Stack.Navigator
@@ -25,7 +25,7 @@ const AppStack = () => {
           backgroundColor: 'white',
         },
       }}
-      initialRouteName={RouterDefine.LOGIN.name}>
+      initialRouteName={RouterDefine.SPLASH.name}>
       {stacks.map((row, i) => {
         return <Stack.Screen key={i} {...row} />;
       })}

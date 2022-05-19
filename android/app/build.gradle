@@ -128,7 +128,7 @@ def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitect
 
 android {
     ndkVersion rootProject.ext.ndkVersion
-
+    ext.kotlin_version = '1.6.0'
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -136,7 +136,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.1.0"
     }
     splits {
         abi {

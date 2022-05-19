@@ -1,5 +1,5 @@
 import HomeScreen from './home';
 import LoginScreen from './login';
-import PostScreen from './post';
+import SplashScreen from './splash';
 
-export {HomeScreen, LoginScreen, PostScreen};
+export {HomeScreen, LoginScreen, SplashScreen};

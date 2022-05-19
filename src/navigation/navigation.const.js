@@ -8,8 +8,8 @@ export const RouterName = {
     title: 'Home',
     name: 'HomeScreen',
   },
-  POST: {
+  SPLASH: {
     title: 'Post',
-    name: 'PostScreen',
+    name: 'SplashScreen',
   },
 };

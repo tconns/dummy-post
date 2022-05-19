@@ -1,5 +1,5 @@
 import {RouterName} from './navigation.const';
-import {HomeScreen, LoginScreen, PostScreen} from '../screens';
+import {HomeScreen, LoginScreen, SplashScreen} from '../screens';
 
 export const RouterDefine = {
   LOGIN: {
@@ -10,8 +10,8 @@ export const RouterDefine = {
     ...RouterName.HOME,
     component: HomeScreen,
   },
-  POST: {
-    ...RouterName.POST,
-    component: PostScreen,
+  SPLASH: {
+    ...RouterName.SPLASH,
+    component: SplashScreen,
   },
 };

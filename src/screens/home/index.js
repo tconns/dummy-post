@@ -8,6 +8,9 @@ import {connect} from 'react-redux';
 import styles from './styles';
 import {FlatList} from 'react-native-gesture-handler';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+import {CommonActions} from '@react-navigation/native';
+import auth from '@react-native-firebase/auth';
+import {SettingAction} from '../../actions';
 
 class Screen extends BaseScreen {
   constructor(props) {
@@ -28,10 +31,13 @@ class Screen extends BaseScreen {
     //     // date: new Date(Date.now() + 10 * 1000),
     //   });
     // });
+    const {enableLoading} = this.props;
+    enableLoading(true);
     database()
       .ref('/')
       .on('value', snapshot => {
         console.log(snapshot.val());
+        enableLoading(false);
         this.setState({
           post: snapshot.val()[1],
           comments: snapshot.val()[1].comments,
@@ -46,6 +52,7 @@ class Screen extends BaseScreen {
 
   renderItem = ({item}) => {
     const {profile} = this.props;
+    console.log('renderItem', profile);
     const myAccount = {
       userName: profile.profile.user.displayName,
       userId: profile.profile.user.uid,
@@ -54,10 +61,11 @@ class Screen extends BaseScreen {
       <View
         style={{
           width: '100%',
-          height: 50,
+          // height: 50,
           backgroundColor: item?.userId === myAccount.userId ? 'green' : 'gray',
           marginVertical: 5,
           borderRadius: 5,
+          padding: 10
         }}>
         <Text
           style={{
@@ -75,6 +83,7 @@ class Screen extends BaseScreen {
       return;
     }
     const {profile} = this.props;
+    console.log(profile);
     const myAccount = {
       userName: profile.profile.user.displayName,
       userId: profile.profile.user.uid,
@@ -86,13 +95,54 @@ class Screen extends BaseScreen {
     };
     const ref = database().ref(`/1/comments`);
     ref.transaction(cmt => [...cmt, newComment]);
+    setTimeout(() => {
+      this.list?.current?.scrollToEnd();
+    }, 200);
+  };
+
+  logout = async () => {
+    try {
+      await auth().signOut();
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: RouterName.LOGIN.name}],
+        }),
+      );
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   renderContent() {
     const {post, comments, input} = this.state;
     if (!post) return null;
+    const data = comments.filter((item, index) => item !== null);
     return (
       <View style={styles.container}>
+        <View
+          style={{
+            height: 80,
+            width: '100%',
+            padding: 10,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <Text style={{fontSize: 24}}>{'Post Screen'}</Text>
+          <Pressable
+            style={{
+              width: 50,
+              height: 50,
+              backgroundColor: '#50505099',
+              borderRadius: 4,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => this.logout()}>
+            <Text>Logout</Text>
+          </Pressable>
+        </View>
         <View style={{margin: 10, marginBottom: 20}}>
           <Text style={{fontSize: 20}}>{post?.title}</Text>
           <Text>{post?.description}</Text>
@@ -102,11 +152,12 @@ class Screen extends BaseScreen {
             <Text>Comment</Text>
           </View>
           <FlatList
+            ref={ref => (this.list = ref)}
             style={{flex: 1}}
             renderItem={this.renderItem}
-            keyExtractor={item => `${item.userId}`}
-            data={comments || []}
-            extraData={comments}
+            keyExtractor={(item, index) => `${item.userId}-${index}`}
+            data={data || []}
+            extraData={data}
           />
         </View>
         <View
@@ -115,6 +166,7 @@ class Screen extends BaseScreen {
             height: 60,
             paddingHorizontal: 10,
             flexDirection: 'row',
+            alignItems: 'center',
           }}>
           <TextInput
             style={styles.input}
@@ -129,6 +181,8 @@ class Screen extends BaseScreen {
               height: 50,
               backgroundColor: '#50505099',
               borderRadius: 4,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
             onPress={() => this.sendData()}>
             <Text>Send</Text>
@@ -146,7 +200,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = (dispatch, getState) => {
-  return {};
+  return {
+    enableLoading: enable => dispatch(SettingAction.enableLoading(enable)),
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Screen);
